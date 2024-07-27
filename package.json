@@ -1,0 +1,17 @@
+{
+  "name": "widatech-takehome-assignment",
+  "version": "1.0.0",
+  "description": "This is my attempt at clearing the technical challenge from WidaTech as a part of the hiring process",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mysql2": "^3.10.3"
+  }
+}
