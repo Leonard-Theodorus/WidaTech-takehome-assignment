@@ -4,9 +4,9 @@ dotenv.config();
 
 const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
+    user: 'root',
     password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE
+    database: 'product_db',
 }).promise();
 
 export async function getProduct(id) {
@@ -15,6 +15,13 @@ export async function getProduct(id) {
     WHERE id = ?
     `, [id]);
     return result[0]; // returns array of javascript object describing product
+}
+
+export async function getAllProduct() {
+    const [result] = await pool.query(`
+    SELECT * FROM product
+    `);
+    return result[0];
 }
 
 // Input -> invoice model that contains date, customer, salesperson name,
@@ -26,30 +33,33 @@ export async function addInvoice(invoice) {
     const salespersonName = invoice.salesperson_name;
     const notes = invoice.notes;
 
-    await pool.query(`
+    const result = await pool.query(`
         INSERT INTO invoice (date_added, customer_name, salesperson_name, notes)
         VALUES
         (?, ?, ?, ?)
         `, [date, customerName, salespersonName, notes]);
+    const id = result.insertId;
+    return getInvoice(id);
 }
 
 // One or many products, which includes product_id, and quantity added
-export async function addSales(invoice, products) {
-    for (product in products) {
-        const quantity = product.quantity;
-        const id = product.id;
-        const productPrice = await getProduct(id).price;
-        const totalPrice = quantity * productPrice;
+export async function addSales(invoice, product) {
+    const quantity = product.quantity;
+    const productId = product.id;
+    const invoiceId = invoice.id;
+    // const productPrice = await getProduct(productId).price;
+    const fetchedProduct = await getProduct(productId);
+    const productPrice = fetchedProduct.price;
+    const totalPrice = quantity * productPrice;
 
-        await pool.query(`
+    await pool.query(`
         INSERT INTO sales (invoice_id, product_id, quantity, total_price)
         VALUES
         (?, ?, ?, ?)
-        `, [invoice.id, id, quantity, totalPrice]);
-    }
+        `, [invoiceId, productId , quantity, totalPrice]);
 }
 
-export async function getInvoice (id) {
+export async function getInvoice(id) {
     const [result] = await pool.query(`
     SELECT * FROM invoice 
     WHERE id = ?
