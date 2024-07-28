@@ -38,8 +38,8 @@ app.get("/sales", async (req, res) => {
     const pageLimit = Math.ceil(allSales.length / 5); // The last page where there is no empty item
     // asuuming 5 invoices per page
     let page = parseInt(req.query.p); // Page in the HTTP request's query using the word p
-    if (!page) {page = 1};
-    if (page > pageLimit) {page = pageLimit};
+    if (!page) {page = 1}; //If query is not provided in the request, default to first page
+    if (page > pageLimit) {page = pageLimit}; // if requested page is more than page limit, default to the last page
     
     res.json({
         "page" : page,

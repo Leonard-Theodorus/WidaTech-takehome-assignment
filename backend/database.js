@@ -47,7 +47,6 @@ export async function addSales(invoice, product) {
     const quantity = product.quantity;
     const productId = product.id;
     const invoiceId = invoice.id;
-    // const productPrice = await getProduct(productId).price;
     const fetchedProduct = await getProduct(productId);
     const productPrice = fetchedProduct.price;
     const totalPrice = quantity * productPrice;
